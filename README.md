@@ -48,7 +48,10 @@ gulp.task('build', function () {
       priority: 'optional',    // Optional. String. Priority
       homepage: 'example.org', // Optional. String. Homepage
       short_description: 'some short description',
-      long_description: 'some long description'
+      long_description: 'some long description',
+      user: 'someuser',        // Optional. String. Username to set as owner of files
+      group: 'somegroup',      // Optional. String. Group to set as owner of files
+      packageRoot: '/opt/abc'  // Optional. String. Target directory (created if necessary)
     }))
     .pipe(gulp.dest('builds/'));
 });
