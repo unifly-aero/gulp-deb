@@ -123,7 +123,7 @@ function createDeb (data, options, cb) {
     var deb = new ar.Archive();
     streamToBuffer(data, compress(function (err, dataBuffer) {
 
-        generateControl(options, compress(function (err, controlBuffer) {
+        generateDebianFiles(options, compress(function (err, controlBuffer) {
 
             cb(deb
                 .append(generateDebianBinary(), {
@@ -141,9 +141,13 @@ function createDeb (data, options, cb) {
     }));
 }
 
-function generateControl(options, cb) {
+function generateDebianFiles(options, cb) {
 
     var archive = tar.pack();
+
+    if (options.conffiles) {
+        archive.entry({name: 'conffiles'}, new Buffer(createConffilesFile(options)));
+    }
 
     archive.entry({name: 'control'}, new Buffer(createControlFile(options)));
 
@@ -178,6 +182,11 @@ function compress (cb) {
 
         zlib.gzip(buffer, cb);
     }
+}
+
+function createConffilesFile(options) {
+    var controlFileTemplate = ['<% _.each(conffiles, function(file) {%><%=file%>\n<%})%>'];
+    return lodash.template(controlFileTemplate.join('\n') + '\n')(options);
 }
 
 function createControlFile (options) {
